@@ -1,0 +1,935 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            {% if is_update %}
+                <h2>Update Employee</h2>
+                <p class="text-muted">
+                    Update employee information
+                </p>
+            {% else %}
+                <h2>Add Employee</h2>
+                <p class="text-muted">
+                    Add a new employee to CrewConnect
+                </p>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'employee_list' %}" class="btn btn-secondary">
+            Back to Employees
+        </a>
+
+    </div>
+
+
+    <!-- Employee Form -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            {% if is_update %}
+
+                <form method="POST"
+                      action="{% url 'employee_update' employee.id %}"
+                      id="employeeForm">
+
+            {% else %}
+
+                <form method="POST"
+                      action="{% url 'employee_create' %}"
+                      id="employeeForm">
+
+            {% endif %}
+
+                {% csrf_token %}
+
+
+                <!-- Employee ID -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Employee ID
+                    </label>
+
+                    <input
+                        type="text"
+                        name="employee_id"
+                        id="employee_id"
+                        class="form-control"
+                        placeholder="Enter employee ID"
+                        value="{{ employee.employee_id|default:'' }}"
+                        required
+                    >
+
+                    <div
+                        id="employee-id-error"
+                        class="text-danger mt-1"
+                        style="display: none;"
+                    >
+                        Employee ID already exists.
+                    </div>
+
+                    <div
+                        id="employee-id-success"
+                        class="text-success mt-1"
+                        style="display: none;"
+                    >
+                        Employee ID is available.
+                    </div>
+
+                </div>
+
+
+                <!-- Name -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Employee Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="Enter employee name"
+                        value="{{ employee.name|default:'' }}"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Email -->
+
+                <div class="mb-3">
+
+                    <label for="email" class="form-label">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        class="form-control"
+                        placeholder="Enter email"
+                        value="{{ employee.email|default:'' }}"
+                        required
+                    >
+
+                    <div
+                        id="email-error"
+                        class="text-danger mt-1"
+                        style="display: none;"
+                    >
+                        Email already exists.
+                    </div>
+
+                    <div
+                        id="email-success"
+                        class="text-success mt-1"
+                        style="display: none;"
+                    >
+                        Email is available.
+                    </div>
+
+                </div>
+
+
+                <!-- Phone -->
+
+                <div class="mb-3">
+
+                    <label for="phone" class="form-label">
+                        Phone
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        id="phone"
+                        class="form-control"
+                        placeholder="Enter 10-digit phone number"
+                        value="{{ employee.phone|default:'' }}"
+                        maxlength="10"
+                        minlength="10"
+                        pattern="[6-9][0-9]{9}"
+                        inputmode="numeric"
+                        title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9."
+                        required
+                    >
+
+                    <div
+                        id="phone-error"
+                        class="text-danger mt-1"
+                        style="display: none;"
+                    >
+                        Mobile number already exists.
+                    </div>
+
+                    <div
+                        id="phone-success"
+                        class="text-success mt-1"
+                        style="display: none;"
+                    >
+                        Mobile number is available.
+                    </div>
+
+                    <div class="form-text">
+                        Enter exactly 10 digits.
+                    </div>
+
+                </div>
+
+
+                <!-- Department -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Department
+                    </label>
+
+                    <select
+                        name="department"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Department
+                        </option>
+
+                        {% for department in departments %}
+
+                            <option
+                                value="{{ department.id }}"
+                                {% if employee.department_id == department.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ department.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Designation -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Designation
+                    </label>
+
+                    <select
+                        name="designation"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Designation
+                        </option>
+
+                        {% for designation in designations %}
+
+                            <option
+                                value="{{ designation.id }}"
+                                {% if employee.designation_id == designation.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ designation.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Joining Date -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Joining Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="joining_date"
+                        class="form-control"
+                        value="{{ employee.joining_date|date:'Y-m-d' }}"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Employment Type -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Employment Type
+                    </label>
+
+                    <select
+                        name="employment_type"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Employment Type
+                        </option>
+
+                        {% for value, label in employment_types %}
+
+                            <option
+                                value="{{ value }}"
+                                {% if employee.employment_type == value %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ label }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Salary -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Salary
+                    </label>
+
+                    <input
+                        type="number"
+                        name="salary"
+                        class="form-control"
+                        placeholder="Enter salary"
+                        value="{{ employee.salary|default:'' }}"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Address -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Address
+                    </label>
+
+                    <textarea
+                        name="address"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Enter address"
+                        required
+                    >{{ employee.address|default:'' }}</textarea>
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="form-check mb-4">
+
+                    <input
+                        type="checkbox"
+                        name="status"
+                        class="form-check-input"
+                        id="status"
+
+                        {% if not is_update or employee.status %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <label
+                        class="form-check-label"
+                        for="status"
+                    >
+                        Active
+                    </label>
+
+                </div>
+
+
+                <!-- Submit Button -->
+
+                {% if is_update %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning"
+                        id="submitButton"
+                    >
+                        Update Employee
+                    </button>
+
+                {% else %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitButton"
+                    >
+                        Add Employee
+                    </button>
+
+                {% endif %}
+
+                <a
+                    href="{% url 'employee_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const employeeIdInput =
+        document.getElementById("employee_id");
+
+    const employeeIdError =
+        document.getElementById("employee-id-error");
+
+    const employeeIdSuccess =
+        document.getElementById("employee-id-success");
+
+
+    const emailInput =
+        document.getElementById("email");
+
+    const emailError =
+        document.getElementById("email-error");
+
+    const emailSuccess =
+        document.getElementById("email-success");
+
+
+    const phoneInput =
+        document.getElementById("phone");
+
+    const phoneError =
+        document.getElementById("phone-error");
+
+    const phoneSuccess =
+        document.getElementById("phone-success");
+
+
+    const employeeForm =
+        document.getElementById("employeeForm");
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+
+    let employeeIdTimer;
+    let emailTimer;
+    let phoneTimer;
+
+
+    let employeeIdExists = false;
+    let emailExists = false;
+    let phoneExists = false;
+
+
+    /* =====================================================
+       EMPLOYEE ID CHECK
+    ===================================================== */
+
+    employeeIdInput.addEventListener("input", function () {
+
+        const employeeId = this.value.trim();
+
+        clearTimeout(employeeIdTimer);
+
+        employeeIdExists = false;
+
+        employeeIdError.style.display = "none";
+        employeeIdSuccess.style.display = "none";
+
+        employeeIdInput.classList.remove(
+            "is-invalid",
+            "is-valid"
+        );
+
+        if (employeeId === "") {
+            return;
+        }
+
+
+        employeeIdTimer = setTimeout(function () {
+
+            fetch(
+                "{% url 'check_employee_id' %}?employee_id="
+                + encodeURIComponent(employeeId)
+            )
+
+            .then(function (response) {
+
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+
+                return response.json();
+
+            })
+
+            .then(function (data) {
+
+                {% if is_update %}
+
+                const currentEmployeeId =
+                    "{{ employee.employee_id|default:''|escapejs }}";
+
+                if (employeeId === currentEmployeeId) {
+
+                    employeeIdExists = false;
+
+                    employeeIdError.style.display = "none";
+                    employeeIdSuccess.style.display = "none";
+
+                    employeeIdInput.classList.remove("is-invalid");
+                    employeeIdInput.classList.add("is-valid");
+
+                    return;
+                }
+
+                {% endif %}
+
+
+                if (data.exists) {
+
+                    employeeIdExists = true;
+
+                    employeeIdError.textContent =
+                        "Employee ID already exists.";
+
+                    employeeIdError.style.display = "block";
+                    employeeIdSuccess.style.display = "none";
+
+                    employeeIdInput.classList.add("is-invalid");
+                    employeeIdInput.classList.remove("is-valid");
+
+                } else {
+
+                    employeeIdExists = false;
+
+                    employeeIdError.style.display = "none";
+
+                    employeeIdSuccess.textContent =
+                        "Employee ID is available.";
+
+                    employeeIdSuccess.style.display = "block";
+
+                    employeeIdInput.classList.add("is-valid");
+                    employeeIdInput.classList.remove("is-invalid");
+                }
+
+            })
+
+            .catch(function (error) {
+
+                console.log(
+                    "Employee ID check error:",
+                    error
+                );
+
+            });
+
+        }, 300);
+
+    });
+
+
+    /* =====================================================
+       EMAIL CHECK
+    ===================================================== */
+
+    emailInput.addEventListener("input", function () {
+
+        const email = this.value.trim().toLowerCase();
+
+        clearTimeout(emailTimer);
+
+        emailExists = false;
+
+        emailError.style.display = "none";
+        emailSuccess.style.display = "none";
+
+        emailInput.classList.remove(
+            "is-invalid",
+            "is-valid"
+        );
+
+        if (email === "") {
+            return;
+        }
+
+
+        emailTimer = setTimeout(function () {
+
+            fetch(
+                "{% url 'check_employee_email' %}?email="
+                + encodeURIComponent(email)
+            )
+
+            .then(function (response) {
+
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+
+                return response.json();
+
+            })
+
+            .then(function (data) {
+
+                {% if is_update %}
+
+                const currentEmail =
+                    "{{ employee.email|default:''|escapejs }}".toLowerCase();
+
+                if (email === currentEmail) {
+
+                    emailExists = false;
+
+                    emailError.style.display = "none";
+                    emailSuccess.style.display = "none";
+
+                    emailInput.classList.remove("is-invalid");
+                    emailInput.classList.add("is-valid");
+
+                    return;
+                }
+
+                {% endif %}
+
+
+                if (data.exists) {
+
+                    emailExists = true;
+
+                    emailError.textContent =
+                        "Email already exists.";
+
+                    emailError.style.display = "block";
+                    emailSuccess.style.display = "none";
+
+                    emailInput.classList.add("is-invalid");
+                    emailInput.classList.remove("is-valid");
+
+                } else {
+
+                    emailExists = false;
+
+                    emailError.style.display = "none";
+
+                    emailSuccess.textContent =
+                        "Email is available.";
+
+                    emailSuccess.style.display = "block";
+
+                    emailInput.classList.add("is-valid");
+                    emailInput.classList.remove("is-invalid");
+                }
+
+            })
+
+            .catch(function (error) {
+
+                console.log(
+                    "Email check error:",
+                    error
+                );
+
+            });
+
+        }, 300);
+
+    });
+
+
+    /* =====================================================
+       PHONE DUPLICATE CHECK
+    ===================================================== */
+
+    phoneInput.addEventListener("input", function () {
+
+        this.value = this.value
+            .replace(/\D/g, "")
+            .slice(0, 10);
+
+        const phone = this.value.trim();
+
+        clearTimeout(phoneTimer);
+
+        phoneExists = false;
+
+        phoneError.style.display = "none";
+        phoneSuccess.style.display = "none";
+
+        phoneInput.classList.remove(
+            "is-invalid",
+            "is-valid"
+        );
+
+
+        if (phone.length !== 10) {
+            return;
+        }
+
+
+        if (!/^[6-9][0-9]{9}$/.test(phone)) {
+            phoneInput.classList.add("is-invalid");
+            return;
+        }
+
+
+        phoneTimer = setTimeout(function () {
+
+            fetch(
+                "{% url 'check_employee_phone' %}?phone="
+                + encodeURIComponent(phone)
+            )
+
+            .then(function (response) {
+
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+
+                return response.json();
+
+            })
+
+            .then(function (data) {
+
+                {% if is_update %}
+
+                const currentPhone =
+                    "{{ employee.phone|default:''|escapejs }}";
+
+                if (phone === currentPhone) {
+
+                    phoneExists = false;
+
+                    phoneError.style.display = "none";
+                    phoneSuccess.style.display = "none";
+
+                    phoneInput.classList.remove("is-invalid");
+                    phoneInput.classList.add("is-valid");
+
+                    return;
+                }
+
+                {% endif %}
+
+
+                if (data.exists) {
+
+                    phoneExists = true;
+
+                    phoneError.textContent =
+                        "Mobile number already exists.";
+
+                    phoneError.style.display = "block";
+                    phoneSuccess.style.display = "none";
+
+                    phoneInput.classList.add("is-invalid");
+                    phoneInput.classList.remove("is-valid");
+
+                } else {
+
+                    phoneExists = false;
+
+                    phoneError.style.display = "none";
+
+                    phoneSuccess.textContent =
+                        "Mobile number is available.";
+
+                    phoneSuccess.style.display = "block";
+
+                    phoneInput.classList.add("is-valid");
+                    phoneInput.classList.remove("is-invalid");
+                }
+
+            })
+
+            .catch(function (error) {
+
+                console.log(
+                    "Mobile check error:",
+                    error
+                );
+
+            });
+
+        }, 300);
+
+    });
+
+
+    /* =====================================================
+       FORM SUBMIT
+    ===================================================== */
+
+    employeeForm.addEventListener("submit", function (event) {
+
+        const employeeId =
+            employeeIdInput.value.trim();
+
+        const email =
+            emailInput.value.trim().toLowerCase();
+
+        const phone =
+            phoneInput.value.trim();
+
+
+        /* Employee ID */
+
+        if (employeeId === "") {
+
+            event.preventDefault();
+
+            employeeIdInput.focus();
+
+            return;
+        }
+
+
+        if (employeeIdExists) {
+
+            event.preventDefault();
+
+            employeeIdError.textContent =
+                "Employee ID already exists.";
+
+            employeeIdError.style.display = "block";
+
+            employeeIdInput.classList.add("is-invalid");
+
+            employeeIdInput.focus();
+
+            return;
+        }
+
+
+        /* Email */
+
+        if (email === "") {
+
+            event.preventDefault();
+
+            emailInput.focus();
+
+            return;
+        }
+
+
+        if (emailExists) {
+
+            event.preventDefault();
+
+            emailError.textContent =
+                "Email already exists.";
+
+            emailError.style.display = "block";
+
+            emailInput.classList.add("is-invalid");
+
+            emailInput.focus();
+
+            return;
+        }
+
+
+        /* Phone format */
+
+        if (!/^[6-9][0-9]{9}$/.test(phone)) {
+
+            event.preventDefault();
+
+            phoneInput.classList.add("is-invalid");
+
+            phoneInput.focus();
+
+            alert(
+                "Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9."
+            );
+
+            return;
+        }
+
+
+        /* Phone duplicate */
+
+        if (phoneExists) {
+
+            event.preventDefault();
+
+            phoneError.textContent =
+                "Mobile number already exists.";
+
+            phoneError.style.display = "block";
+
+            phoneInput.classList.add("is-invalid");
+
+            phoneInput.focus();
+
+            return;
+        }
+
+
+        /* Prevent multiple clicks */
+
+        submitButton.disabled = true;
+
+    });
+
+});
+
+</script>
+
+{% endblock %}
