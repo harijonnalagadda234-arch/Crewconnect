@@ -3,7 +3,10 @@
     {
       "src": "Crewconnect/wsgi.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "50mb" }
+      "config": {
+        "maxLambdaSize": "50mb",
+        "includeFiles": ["static/**", "staticfiles/**", "templates/**"]
+      }
     }
   ],
   "routes": [
