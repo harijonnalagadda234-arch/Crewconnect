@@ -1,0 +1,12 @@
+{
+  "builds": [
+    {
+      "src": "Crewconnect/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "50mb" }
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "Crewconnect/wsgi.py" }
+  ]
+}

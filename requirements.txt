@@ -1,0 +1,5 @@
+﻿Django==5.2.18
+PyMySQL==1.1.1
+cryptography==50.0.2
+whitenoise==6.9.0
+certifi
